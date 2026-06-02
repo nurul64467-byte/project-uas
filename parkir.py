@@ -154,6 +154,12 @@ else:
             "Pendapatan"
         ]
     )
+    
+    st.sidebar.markdown("---")
+
+    if st.sidebar.button("🚪 Logout"):
+        st.session_state.login = False
+        st.rerun()
 
     # =================================================
     # DASHBOARD
@@ -178,6 +184,32 @@ else:
 
         st.info("Selamat Datang di Dashboard Sistem Parkir Mall")
         
+        data = st.session_state.parkir.tampilkan()
+
+        motor = len([
+            x for x in data
+            if x["Jenis"] == "Motor"
+        ])
+
+        mobil = len([
+            x for x in data
+            if x["Jenis"] == "Mobil"
+        ])
+
+        st.markdown("### 📊 Statistik Kendaraan")
+
+        col1, col2 = st.columns(2)
+
+        col1.metric(
+            "🏍️ Motor Parkir",
+            motor
+        )
+
+        col2.metric(
+            "🚗 Mobil Parkir",
+            mobil
+        )
+
         st.markdown("---")
         st.subheader("🧮 Simulasi Tarif Parkir")
 
