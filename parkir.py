@@ -275,20 +275,49 @@ else:
             Biaya dihitung berdasarkan jumlah jam parkir.
         """)
 
-        plat = st.text_input("Masukkan Plat Nomor")
+        data_parkir = st.session_state.parkir.tampilkan()
+
+        if len(data_parkir) > 0:
+
+            daftar_plat = [
+                item["Plat"]
+                for item in data_parkir
+            ]
+
+            plat = st.selectbox(
+                "Pilih Plat Nomor",
+                daftar_plat
+            )
+            
+            kendaraan = st.session_state.parkir.cari(plat)
+
+            if kendaraan:
+
+                st.info(
+                    f"""
+                    🎫 Tiket : {kendaraan.tiket}
+                    🚗 Jenis : {kendaraan.jenis}
+                    🕒 Waktu Masuk : {kendaraan.waktu_masuk}
+                 """
+                )
+
+        else:
+
+            st.warning(
+                "Tidak ada kendaraan yang sedang parkir"
+            )
+
+            plat = None
 
         metode = st.selectbox(
             "Metode Pembayaran",
             [
                 "Cash",
-                "QRIS",
-                "Debit",
-                "Kredit",
                 "E-Wallet"
             ]
         )
 
-        if st.button("Hitung Tagihan"):
+        if plat and st.button("Hitung Tagihan"):
 
             data = st.session_state.parkir.cari(plat)
 
@@ -441,11 +470,19 @@ else:
 
         st.subheader("🔍 Cari Kendaraan")
 
-        plat_cari = st.text_input(
-            "Masukkan Plat Nomor"
-        )
+        data_parkir = st.session_state.parkir.tampilkan()
 
-        if st.button("Cari Kendaraan"):
+        if len(data_parkir) > 0:
+
+            daftar_plat = [
+                item["Plat"]
+                for item in data_parkir
+            ]
+
+            plat_cari = st.selectbox(
+                "Pilih Plat Nomor",
+                daftar_plat
+            )
 
             hasil = st.session_state.parkir.cari(
                 plat_cari
@@ -453,31 +490,26 @@ else:
 
             if hasil:
 
-                st.success(
-                    "Kendaraan Ditemukan"
+                st.success("Kendaraan Ditemukan")
+
+                st.info(
+                    f"""
+                    🎫 Tiket : {hasil.tiket}
+
+                    🚗 Plat : {hasil.plat}
+
+                    🚘 Jenis : {hasil.jenis}
+
+                    🕒 Waktu Masuk : {hasil.waktu_masuk}
+                    """
                 )
 
-                st.write(
-                    f"Nomor Tiket : {hasil.tiket}"
-                )
+        else:
 
-                st.write(
-                    f"Plat Nomor : {hasil.plat}"
-                )
+            st.warning(
+                "Belum Ada Kendaraan Yang Parkir"
+            )
 
-                st.write(
-                    f"Jenis Kendaraan : {hasil.jenis}"
-                )
-
-                st.write(
-                    f"Waktu Masuk : {hasil.waktu_masuk}"
-                )
-
-            else:
-
-                st.error(
-                    "Kendaraan Tidak Ditemukan"
-                )
 
 # =================================================
 # SORTING PLAT
