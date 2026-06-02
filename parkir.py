@@ -166,8 +166,7 @@ else:
     # DASHBOARD
     # =================================================
 
-    if menu == "Dashboard":
-
+    if menu == "🏠 Dashboard":
         total_parkir = len(st.session_state.parkir.tampilkan())
 
         total_transaksi = len(st.session_state.riwayat)
@@ -236,9 +235,9 @@ else:
             )
 
         if jenis_simulasi == "Motor":
-            tarif_simulasi = 2000
-        else:
             tarif_simulasi = 3000
+        else:
+            tarif_simulasi = 5000
 
         estimasi = jam_simulasi * tarif_simulasi
 
@@ -255,7 +254,7 @@ else:
     # KENDARAAN MASUK
     # =================================================
 
-    elif menu == "Kendaraan Masuk":
+    elif menu == "🚗 Kendaraan Masuk":
 
         st.subheader("🚗 Kendaraan Masuk")
 
@@ -300,7 +299,7 @@ else:
     # KENDARAAN KELUAR
     # =================================================
 
-    elif menu == "Kendaraan Keluar":
+    elif menu == "🚘 Kendaraan Keluar":
 
         st.subheader("🚘 Kendaraan Keluar")
         st.info("""
@@ -321,8 +320,10 @@ else:
 
         data_parkir = st.session_state.parkir.tampilkan()
 
+        plat = None
+
         if len(data_parkir) > 0:
-            
+
             daftar_plat = [
                 item["Plat"]
                 for item in data_parkir
@@ -339,11 +340,11 @@ else:
             with col2:
                 metode = st.selectbox(
                     "💳 Metode Pembayaran",
-                    [
-                        "Cash",
-                        "E-Wallet"
-                    ]
-                )
+                [
+                    "Cash",
+                    "E-Wallet"
+                ]
+            )
 
         kendaraan = st.session_state.parkir.cari(plat)
 
@@ -355,6 +356,11 @@ else:
                 st.write("🚘 Jenis :", kendaraan.jenis)
                 st.write("🕒 Waktu Masuk :", kendaraan.waktu_masuk)
 
+        else:
+
+            st.warning(
+            "Tidak ada kendaraan yang sedang parkir"
+        )
         if plat and st.button("Hitung Tagihan"):
 
             data = st.session_state.parkir.cari(plat)
@@ -489,7 +495,7 @@ else:
     # DAFTAR PARKIR
     # =================================================
 
-    elif menu == "Daftar Parkir":
+    elif menu == "📋 Daftar Parkir":
 
         st.subheader("📋 Daftar Kendaraan Parkir")
 
@@ -517,7 +523,7 @@ else:
     # CARI KENDARAAN
     # =================================================
 
-    elif menu == "Cari Kendaraan":
+    elif menu == "🔍 Cari Kendaraan":
 
         st.subheader("🔍 Cari Kendaraan")
 
@@ -566,7 +572,7 @@ else:
 # SORTING PLAT
 # =================================================
 
-    elif menu == "Sorting Plat":
+    elif menu == "🔤 Sorting Plat":
 
         st.subheader(
             "🔤 Sorting Plat Nomor (A-Z)"
@@ -596,7 +602,7 @@ else:
 # RIWAYAT TRANSAKSI
 # =================================================
 
-    elif menu == "Riwayat Transaksi":
+    elif menu == "🧾 Riwayat Transaksi":
 
         st.subheader("🧾 Riwayat Transaksi")
 
@@ -635,7 +641,7 @@ else:
 # PENDAPATAN
 # =================================================
 
-    elif menu == "Pendapatan":
+    elif menu == "💰 Pendapatan":
 
         st.subheader("💰 Pendapatan Parkir")
 
