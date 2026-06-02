@@ -177,6 +177,37 @@ else:
         )
 
         st.info("Selamat Datang di Dashboard Sistem Parkir Mall")
+        
+        st.markdown("---")
+        st.subheader("🧮 Simulasi Tarif Parkir")
+
+        jenis_simulasi = st.selectbox(
+            "Pilih Jenis Kendaraan",
+            ["Motor", "Mobil"]
+        )
+
+        jam_simulasi = st.number_input(
+            "Lama Parkir (Jam)",
+            min_value=1,
+            value=1,
+            step=1
+        )
+
+        if jenis_simulasi == "Motor":
+            tarif_simulasi = 2000
+        else:
+            tarif_simulasi = 3000
+
+        estimasi = jam_simulasi * tarif_simulasi
+
+        st.success(
+            f"Estimasi Biaya Parkir: Rp {estimasi:,}"
+        )
+
+        st.write("Rincian:")
+        st.write(f"Jenis Kendaraan : {jenis_simulasi}")
+        st.write(f"Lama Parkir : {jam_simulasi} Jam")
+        st.write(f"Tarif per Jam : Rp {tarif_simulasi:,}")
 
     # =================================================
     # KENDARAAN MASUK
@@ -228,6 +259,21 @@ else:
     elif menu == "Kendaraan Keluar":
 
         st.subheader("🚘 Kendaraan Keluar")
+        st.info("""
+            📌 Tarif Parkir
+
+            🏍️ Motor
+            • 1 Jam = Rp 3.000
+            • 6 Jam = Rp 18.000
+            • 12 Jam = Rp 36.000
+
+            🚗 Mobil
+            • 1 Jam = Rp 5.000
+            • 6 Jam = Rp 30.000
+            • 12 Jam = Rp 60.000
+
+            Biaya dihitung berdasarkan jumlah jam parkir.
+        """)
 
         plat = st.text_input("Masukkan Plat Nomor")
 
@@ -279,6 +325,8 @@ else:
                 st.write("Plat :", data.plat)
                 st.write("Jenis :", data.jenis)
                 st.write("Metode :", metode)
+                st.write("Durasi Parkir :", f"{durasi:.1f} Jam")
+                st.write("Tarif per Jam :", f"Rp {tarif:,}")
                 st.write("Total Bayar :", f"Rp {biaya:,}")
 
             else:
