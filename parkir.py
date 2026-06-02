@@ -144,15 +144,16 @@ else:
     menu = st.sidebar.radio(
         "Menu",
         [
-            "Dashboard",
-            "Kendaraan Masuk",
-            "Kendaraan Keluar",
-            "Daftar Parkir",
-            "Cari Kendaraan",
-            "Sorting Plat",
-            "Riwayat Transaksi",
-            "Pendapatan"
+            "🏠 Dashboard",
+            "🚗 Kendaraan Masuk",
+            "🚘 Kendaraan Keluar",
+            "📋 Daftar Parkir",
+            "🔍 Cari Kendaraan",
+            "🔤 Sorting Plat",
+            "🧾 Riwayat Transaksi",
+            "💰 Pendapatan"
         ]
+        
     )
     
     st.sidebar.markdown("---")
@@ -171,15 +172,26 @@ else:
 
         total_transaksi = len(st.session_state.riwayat)
 
+        st.subheader("📊 Dashboard")
+        st.caption("Ringkasan data parkir saat ini")
+        st.divider()
+        
         col1, col2, col3 = st.columns(3)
 
-        col1.metric("Kendaraan Parkir", total_parkir)
-
-        col2.metric("Transaksi", total_transaksi)
-
+        col1.metric("🚗 Kendaraan Parkir", total_parkir)
+        col2.metric("🧾 Transaksi", total_transaksi)
         col3.metric(
-            "Pendapatan",
+            "💰 Pendapatan",
             f"Rp {st.session_state.pendapatan:,}"
+        )
+        
+        st.info(
+            f"""
+            📌 Ringkasan Hari Ini
+            🚗 Kendaraan aktif : {total_parkir}
+            🧾 Total transaksi : {total_transaksi}
+            💰 Total pendapatan : Rp {st.session_state.pendapatan:,}
+            """
         )
 
         st.info("Selamat Datang di Dashboard Sistem Parkir Mall")
@@ -210,20 +222,18 @@ else:
             mobil
         )
 
-        st.markdown("---")
-        st.subheader("🧮 Simulasi Tarif Parkir")
+        with st.expander("🧮 Simulasi Tarif Parkir"):
 
-        jenis_simulasi = st.selectbox(
-            "Pilih Jenis Kendaraan",
-            ["Motor", "Mobil"]
-        )
+            jenis_simulasi = st.selectbox(
+                "Jenis Kendaraan",
+                ["Motor", "Mobil"]
+            )
 
-        jam_simulasi = st.number_input(
-            "Lama Parkir (Jam)",
-            min_value=1,
-            value=1,
-            step=1
-        )
+            jam_simulasi = st.number_input(
+                "Lama Parkir (Jam)",
+                min_value=1,
+                value=1
+            )
 
         if jenis_simulasi == "Motor":
             tarif_simulasi = 2000
@@ -277,12 +287,14 @@ else:
 
             st.success("Kendaraan Berhasil Masuk")
 
-            st.write("### TIKET PARKIR")
-
-            st.write(f"Nomor Tiket : {tiket}")
-            st.write(f"Plat Nomor : {plat}")
-            st.write(f"Jenis : {jenis}")
-            st.write(f"Waktu Masuk : {waktu}")
+            st.info(
+                f"""
+                🎫 Nomor Tiket : {tiket}
+                🚗 Plat Nomor : {plat}
+                🚘 Jenis Kendaraan : {jenis}
+                🕒 Waktu Masuk : {waktu}
+                """
+            )
 
     # =================================================
     # KENDARAAN KELUAR
@@ -310,44 +322,38 @@ else:
         data_parkir = st.session_state.parkir.tampilkan()
 
         if len(data_parkir) > 0:
-
+            
             daftar_plat = [
                 item["Plat"]
                 for item in data_parkir
             ]
 
-            plat = st.selectbox(
-                "Pilih Plat Nomor",
-                daftar_plat
-            )
-            
-            kendaraan = st.session_state.parkir.cari(plat)
+            col1, col2 = st.columns(2)
 
-            if kendaraan:
-
-                st.info(
-                    f"""
-                    🎫 Tiket : {kendaraan.tiket}
-                    🚗 Jenis : {kendaraan.jenis}
-                    🕒 Waktu Masuk : {kendaraan.waktu_masuk}
-                 """
+            with col1:
+                plat = st.selectbox(
+                    "🚗 Pilih Plat Nomor",
+                    daftar_plat
                 )
 
-        else:
+            with col2:
+                metode = st.selectbox(
+                    "💳 Metode Pembayaran",
+                    [
+                        "Cash",
+                        "E-Wallet"
+                    ]
+                )
 
-            st.warning(
-                "Tidak ada kendaraan yang sedang parkir"
-            )
+        kendaraan = st.session_state.parkir.cari(plat)
 
-            plat = None
+        if kendaraan:
 
-        metode = st.selectbox(
-            "Metode Pembayaran",
-            [
-                "Cash",
-                "E-Wallet"
-            ]
-        )
+            with st.expander("🚗 Detail Kendaraan"):
+
+                st.write("🎫 Tiket :", kendaraan.tiket)
+                st.write("🚘 Jenis :", kendaraan.jenis)
+                st.write("🕒 Waktu Masuk :", kendaraan.waktu_masuk)
 
         if plat and st.button("Hitung Tagihan"):
 
@@ -382,13 +388,26 @@ else:
 
                 st.success("Tagihan Berhasil Dihitung")
 
-                st.write("### Detail Tagihan")
-                st.write("Plat :", data.plat)
-                st.write("Jenis :", data.jenis)
-                st.write("Metode :", metode)
-                st.write("Durasi Parkir :", f"{durasi:.1f} Jam")
-                st.write("Tarif per Jam :", f"Rp {tarif:,}")
-                st.write("Total Bayar :", f"Rp {biaya:,}")
+                st.subheader("💳 Detail Tagihan")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.metric(
+                        "⏱️ Durasi",
+                        f"{durasi:.1f} Jam"
+                    )
+
+                with col2:
+                    st.metric(
+                        "💰 Total Bayar",
+                        f"Rp {biaya:,}"
+                    )
+
+                st.write("🚗 Plat :", data.plat)
+                st.write("🚘 Jenis :", data.jenis)
+                st.write("💳 Metode :", metode)
+                st.write("💵 Tarif per Jam :", f"Rp {tarif:,}")
 
             else:
                 st.error("Kendaraan Tidak Ditemukan")
@@ -587,13 +606,23 @@ else:
                 st.session_state.riwayat
             )
 
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.metric(
+                    "🧾 Jumlah Transaksi",
+                    len(df)
+                )
+
+            with col2:
+                st.metric(
+                    "💰 Total Pendapatan",
+                    f"Rp {df['Biaya'].sum():,}"
+                )
+
             st.dataframe(
                 df,
                 use_container_width=True
-            )
-
-            st.success(
-                f"Total Transaksi : {len(df)}"
             )
 
         else:
