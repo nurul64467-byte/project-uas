@@ -1,6 +1,49 @@
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
+
+# =====================================================
+# CUSTOM CSS (TAMBAHKAN DI SINI)
+# =====================================================
+st.markdown("""
+    <style>
+    /* 1. Background Halaman Utama (Tema Unicorn Pastel) */
+    .stApp {
+        background: linear-gradient(135deg, #FFB7E8 0%, #B7E4FF 50%, #D4B7FF 100%);
+        background-attachment: fixed;
+    }
+
+    /* 2. Styling Sidebar (Kotak Utama Sidebar) */
+    [data-testid="stSidebar"] {
+        background-color: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px;
+        margin: 10px;
+    }
+
+    /* 3. Membuat setiap pilihan menu memiliki kotak */
+    [data-testid="stSidebar"] div[role="radiogroup"] > label {
+        background-color: white;
+        padding: 10px 15px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+    }
+
+    /* Efek hover saat mouse di atas menu */
+    [data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
+        background-color: #f0f7ff;
+        border-color: #7d5fff;
+    }
+    
+    /* Menghilangkan bullet point default bawaan streamlit jika perlu */
+    [data-testid="stSidebar"] div[role="radiogroup"] {
+        gap: 10px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # =====================================================
 # LOGIN ADMIN
@@ -139,7 +182,15 @@ if not st.session_state.login:
 
 else:
 
-    st.title("🏢 SISTEM PARKIR MALL")
+    st.title("🏢 SISTEM PARKIR MALL KARAWACI")
+
+    st.markdown("""
+    ### 📍 Lokasi
+    Mall Karawaci
+
+    Jl. Boulevard Diponegoro No.105,
+    Karawaci, Tangerang
+    """)
 
     menu = st.sidebar.radio(
         "Menu",
@@ -149,9 +200,7 @@ else:
             "🚘 Kendaraan Keluar",
             "📋 Daftar Parkir",
             "🔍 Cari Kendaraan",
-            "🔤 Sorting Plat",
             "🧾 Riwayat Transaksi",
-            "💰 Pendapatan"
         ]
         
     )
@@ -223,32 +272,24 @@ else:
 
         with st.expander("🧮 Simulasi Tarif Parkir"):
 
-            jenis_simulasi = st.selectbox(
-                "Jenis Kendaraan",
-                ["Motor", "Mobil"]
-            )
+            st.markdown("### 📋 Tarif Parkir")
 
-            jam_simulasi = st.number_input(
-                "Lama Parkir (Jam)",
-                min_value=1,
-                value=1
-            )
+            tarif_df = pd.DataFrame({
+                "Durasi": ["1 Jam", "6 Jam", "12 Jam"],
+                "Motor": [
+                    "Rp 3.000",
+                    "Rp 18.000",
+                    "Rp 36.000"
+                ],
+                "Mobil": [
+                    "Rp 5.000",
+                    "Rp 30.000",
+                    "Rp 60.000"
+                ]
+            })
 
-        if jenis_simulasi == "Motor":
-            tarif_simulasi = 3000
-        else:
-            tarif_simulasi = 5000
+            st.table(tarif_df)
 
-        estimasi = jam_simulasi * tarif_simulasi
-
-        st.success(
-            f"Estimasi Biaya Parkir: Rp {estimasi:,}"
-        )
-
-        st.write("Rincian:")
-        st.write(f"Jenis Kendaraan : {jenis_simulasi}")
-        st.write(f"Lama Parkir : {jam_simulasi} Jam")
-        st.write(f"Tarif per Jam : Rp {tarif_simulasi:,}")
 
     # =================================================
     # KENDARAAN MASUK
@@ -286,14 +327,22 @@ else:
 
             st.success("Kendaraan Berhasil Masuk")
 
-            st.info(
-                f"""
-                🎫 Nomor Tiket : {tiket}
-                🚗 Plat Nomor : {plat}
-                🚘 Jenis Kendaraan : {jenis}
-                🕒 Waktu Masuk : {waktu}
-                """
-            )
+            st.success("✅ Tiket Berhasil Dicetak")
+
+            st.markdown(f"""
+            ## 🎫 TIKET PARKIR
+
+            **Mall Karawaci**
+
+            | Keterangan | Detail |
+            |------------|---------|
+            | Nomor Tiket | {tiket} |
+            | Plat Nomor | {plat} |
+            | Jenis Kendaraan | {jenis} |
+            | Waktu Masuk | {waktu} |
+
+            Terima kasih telah menggunakan layanan parkir kami.
+            """)
 
     # =================================================
     # KENDARAAN KELUAR
@@ -340,10 +389,17 @@ else:
             with col2:
                 metode = st.selectbox(
                     "💳 Metode Pembayaran",
-                [
-                    "Cash",
-                    "E-Wallet"
-                ]
+                    [
+                        "Cash",
+                        "E-Wallet"
+                    ]
+                )
+        
+            lama_jam = st.number_input(
+                "⏱️ Lama Parkir (Jam)",
+                min_value=1,
+                value=1,
+                step=1
             )
 
         kendaraan = st.session_state.parkir.cari(plat)
@@ -372,26 +428,33 @@ else:
                     "%d-%m-%Y %H:%M:%S"
                 )
 
-                keluar = datetime.now()
+                jam_masuk = masuk.strftime(
+                    "%d-%m-%Y %H:%M:%S"
+                )
 
-                durasi = (
-                    keluar - masuk
-                ).total_seconds() / 3600
+                durasi = lama_jam
+
+                keluar = masuk + timedelta(hours=lama_jam)
+
+                jam_keluar = keluar.strftime(
+                    "%d-%m-%Y %H:%M:%S"
+                )
 
                 if data.jenis == "Motor":
                     tarif = 3000
                 else:
                     tarif = 5000
-
-                biaya = max(1, int(durasi)) * tarif
+                
+                biaya = durasi * tarif
 
                 st.session_state.data_keluar = {
                     "data": data,
                     "biaya": biaya,
-                    "keluar": keluar.strftime("%d-%m-%Y %H:%M:%S"),
+                    "durasi": durasi,
+                    "masuk": jam_masuk,
+                    "keluar": jam_keluar,
                     "metode": metode
                 }
-
                 st.success("Tagihan Berhasil Dihitung")
 
                 st.subheader("💳 Detail Tagihan")
@@ -412,6 +475,10 @@ else:
 
                 st.write("🚗 Plat :", data.plat)
                 st.write("🚘 Jenis :", data.jenis)
+
+                st.write("🕒 Waktu Masuk :", jam_masuk)
+                st.write("🕒 Waktu Keluar :", jam_keluar)
+
                 st.write("💳 Metode :", metode)
                 st.write("💵 Tarif per Jam :", f"Rp {tarif:,}")
 
@@ -454,6 +521,7 @@ else:
                             "Jenis": data.jenis,
                             "Masuk": data.waktu_masuk,
                             "Keluar": transaksi["keluar"],
+                            "Lama Parkir": transaksi["durasi"],
                             "Metode": transaksi["metode"],
                             "Biaya": transaksi["biaya"]
                         })
@@ -477,6 +545,7 @@ else:
                         "Jenis": data.jenis,
                         "Masuk": data.waktu_masuk,
                         "Keluar": transaksi["keluar"],
+                        "Lama Parkir": transaksi["durasi"],
                         "Metode": transaksi["metode"],
                         "Biaya": transaksi["biaya"]
                     })
@@ -503,6 +572,11 @@ else:
 
         if len(data) > 0:
 
+            data = sorted(
+                data,
+                key=lambda x: x["Plat"]
+            )
+
             df = pd.DataFrame(data)
 
             st.dataframe(
@@ -512,11 +586,6 @@ else:
 
             st.success(
                 f"Total Kendaraan Parkir : {len(data)}"
-            )
-
-        else:
-            st.warning(
-                "Belum Ada Kendaraan Yang Parkir"
             )
 
     # =================================================
@@ -567,37 +636,6 @@ else:
                 "Belum Ada Kendaraan Yang Parkir"
             )
 
-
-# =================================================
-# SORTING PLAT
-# =================================================
-
-    elif menu == "🔤 Sorting Plat":
-
-        st.subheader(
-            "🔤 Sorting Plat Nomor (A-Z)"
-        )
-
-        data = st.session_state.parkir.tampilkan()
-
-        if len(data) > 0:
-
-            data_sort = sorted(
-                data,
-                key=lambda x: x["Plat"]
-            )
-
-            st.dataframe(
-                pd.DataFrame(data_sort),
-                use_container_width=True
-            )
-
-        else:
-
-            st.warning(
-                "Belum Ada Data Parkir"
-            )
-
 # =================================================
 # RIWAYAT TRANSAKSI
 # =================================================
@@ -637,30 +675,3 @@ else:
                 "Belum Ada Riwayat Transaksi"
             )
 
-# =================================================
-# PENDAPATAN
-# =================================================
-
-    elif menu == "💰 Pendapatan":
-
-        st.subheader("💰 Pendapatan Parkir")
-
-        st.metric(
-            "Total Pendapatan",
-            f"Rp {st.session_state.pendapatan:,}"
-        )
-
-        if len(st.session_state.riwayat) > 0:
-
-            df = pd.DataFrame(
-                st.session_state.riwayat
-            )
-
-            st.dataframe(
-                df[[
-                    "Plat",
-                    "Metode",
-                    "Biaya"
-                ]],
-                use_container_width=True
-            )
