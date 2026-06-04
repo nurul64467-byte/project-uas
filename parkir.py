@@ -469,6 +469,10 @@ else:
                 if bawa_stnk == "Tidak":
                     denda += 50000
                     alasan_denda.append("Tidak Membawa STNK")
+                
+                # Jika tidak ada denda
+                if len(alasan_denda) == 0:
+                    alasan_denda.append("-")
 
                 total_bayar = biaya + denda
 
@@ -643,6 +647,10 @@ else:
 
         if len(data_parkir) > 0:
 
+            st.info(
+                f"🚗 Total Kendaraan Parkir : {len(data_parkir)}"
+            )
+
             daftar_plat = [
                 item["Plat"]
                 for item in data_parkir
@@ -659,17 +667,58 @@ else:
 
             if hasil:
 
-                st.success("Kendaraan Ditemukan")
+                st.success("✅ Kendaraan Ditemukan")
+
+                masuk = datetime.strptime(
+                    hasil.waktu_masuk,
+                    "%d-%m-%Y %H:%M:%S"
+                )
+
+                sekarang = datetime.now()
+
+                lama = sekarang - masuk
+
+                jam = lama.days * 24 + lama.seconds // 3600
+                menit = (lama.seconds % 3600) // 60
+
+                if hasil.jenis == "Motor":
+                    tarif = 3000
+                else:
+                    tarif = 5000
+
+                estimasi = max(1, jam) * tarif
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.metric(
+                        "🎫 Nomor Tiket",
+                        hasil.tiket
+                    )
+
+                    st.metric(
+                        "🚘 Jenis Kendaraan",
+                        hasil.jenis
+                    )
+
+                with col2:
+                    st.metric(
+                        "⏱️ Lama Parkir",
+                        f"{jam} Jam {menit} Menit"
+                    )
+
+                    st.metric(
+                        "💰 Estimasi Biaya",
+                        f"Rp {estimasi:,}"
+                    )
 
                 st.info(
                     f"""
-                    🎫 Tiket : {hasil.tiket}
-
-                    🚗 Plat : {hasil.plat}
-
-                    🚘 Jenis : {hasil.jenis}
+                    🚗 Plat Nomor : {hasil.plat}
 
                     🕒 Waktu Masuk : {hasil.waktu_masuk}
+
+                    🟢 Status : Masih Parkir
                     """
                 )
 
