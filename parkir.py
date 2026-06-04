@@ -51,7 +51,7 @@ st.markdown("""
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "123"
-
+KAPASITAS_PARKIR = 10
 # =====================================================
 # LINKED LIST NODE
 # =====================================================
@@ -223,13 +223,17 @@ else:
         st.caption("Ringkasan data parkir saat ini")
         st.divider()
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
 
         col1.metric("🚗 Kendaraan Parkir", total_parkir)
         col2.metric("🧾 Transaksi", total_transaksi)
         col3.metric(
             "💰 Pendapatan",
             f"Rp {st.session_state.pendapatan:,}"
+        )
+        col4.metric(
+            "🅿️ Kapasitas",
+            f"{total_parkir}/{KAPASITAS_PARKIR}"
         )
         
         st.info(
@@ -306,6 +310,35 @@ else:
         )
 
         if st.button("Cetak Tiket"):
+
+            jumlah_parkir = len(
+                st.session_state.parkir.tampilkan()
+            )
+
+            if jumlah_parkir >= KAPASITAS_PARKIR:
+                st.error(
+                    "🚫 Parkiran Penuh! Kendaraan Tidak Dapat Masuk."
+                )
+
+            else:
+                tiket = f"TKT-{st.session_state.nomor_tiket}"
+                st.session_state.nomor_tiket += 1
+                waktu = datetime.now().strftime(
+                    "%d-%m-%Y %H:%M:%S"
+                )
+
+                node = KendaraanNode(
+                tiket,
+                plat,
+                jenis,
+                waktu
+            )
+
+            st.session_state.parkir.tambah(node)
+
+            st.success(
+            "Kendaraan Berhasil Masuk"
+            )
 
             tiket = f"TKT-{st.session_state.nomor_tiket}"
 
