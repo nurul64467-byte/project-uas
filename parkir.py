@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 # =====================================================
-# CUSTOM CSS (TAMBAHKAN DI SINI)
+# CSS
 # =====================================================
 st.markdown("""
     <style>
@@ -181,13 +181,12 @@ if not st.session_state.login:
 # =====================================================
 
 else:
-
     st.title("🏢 SISTEM PARKIR MALL KARAWACI")
 
     st.markdown("""
     ### 📍 Lokasi
     Mall Karawaci
-
+    
     Jl. Boulevard Diponegoro No.105,
     Karawaci, Tangerang
     """)
@@ -394,7 +393,17 @@ else:
                         "E-Wallet"
                     ]
                 )
-        
+                
+                status_tiket = st.radio(
+                    "🎫 Status Tiket",
+                    ["Tiket Ada", "Tiket Hilang"]
+                )
+
+                bawa_stnk = st.radio(
+                    "📄 Membawa STNK?",
+                    ["Ya", "Tidak"]
+                )
+                
             lama_jam = st.number_input(
                 "⏱️ Lama Parkir (Jam)",
                 min_value=1,
@@ -446,10 +455,29 @@ else:
                     tarif = 5000
                 
                 biaya = durasi * tarif
+                
+                # ==========================
+                # DENDA
+                # ==========================
+                denda = 0
+                alasan_denda = []
+
+                if status_tiket == "Tiket Hilang":
+                    denda += 100000
+                    alasan_denda.append("Tiket Hilang")
+
+                if bawa_stnk == "Tidak":
+                    denda += 50000
+                    alasan_denda.append("Tidak Membawa STNK")
+
+                total_bayar = biaya + denda
 
                 st.session_state.data_keluar = {
                     "data": data,
                     "biaya": biaya,
+                    "denda":denda,
+                    "total": total_bayar,
+                    "alasan_denda": ", ".join(alasan_denda),
                     "durasi": durasi,
                     "masuk": jam_masuk,
                     "keluar": jam_keluar,
@@ -481,6 +509,15 @@ else:
 
                 st.write("💳 Metode :", metode)
                 st.write("💵 Tarif per Jam :", f"Rp {tarif:,}")
+                
+                if denda > 0:
+                    st.error(
+                        f"Alasan Denda : {', '.join(alasan_denda)}"
+                    )
+
+                    st.success(
+                        f"💰 Total Bayar : Rp {total_bayar:,}"
+                    )
 
             else:
                 st.error("Kendaraan Tidak Ditemukan")
@@ -499,12 +536,12 @@ else:
 
                 if st.button("Bayar Cash"):
 
-                    if uang < transaksi["biaya"]:
+                    if uang < transaksi["total"]:
                         st.error("Uang Tidak Mencukupi")
 
                     else:
 
-                        kembalian = uang - transaksi["biaya"]
+                        kembalian = uang - transaksi["total"]
 
                         st.success("Pembayaran Berhasil")
 
@@ -514,7 +551,7 @@ else:
 
                         data = transaksi["data"]
 
-                        st.session_state.pendapatan += transaksi["biaya"]
+                        st.session_state.pendapatan += transaksi["total"]
 
                         st.session_state.riwayat.append({
                             "Plat": data.plat,
@@ -538,7 +575,7 @@ else:
 
                     data = transaksi["data"]
 
-                    st.session_state.pendapatan += transaksi["biaya"]
+                    st.session_state.pendapatan += transaksi["total"]
 
                     st.session_state.riwayat.append({
                         "Plat": data.plat,
@@ -547,7 +584,10 @@ else:
                         "Keluar": transaksi["keluar"],
                         "Lama Parkir": transaksi["durasi"],
                         "Metode": transaksi["metode"],
-                        "Biaya": transaksi["biaya"]
+                        "Biaya Parkir": transaksi["biaya"],
+                        "Denda": transaksi["denda"],
+                        "Alasan Denda": transaksi["alasan_denda"],
+                        "Total Bayar": transaksi["total"]
                     })
 
                     st.session_state.parkir.hapus(
