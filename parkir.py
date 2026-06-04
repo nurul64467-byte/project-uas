@@ -560,7 +560,10 @@ else:
                             "Keluar": transaksi["keluar"],
                             "Lama Parkir": transaksi["durasi"],
                             "Metode": transaksi["metode"],
-                            "Biaya": transaksi["biaya"]
+                            "Biaya Parkir": transaksi["biaya"],
+                            "Denda": transaksi["denda"],
+                            "Alasan Denda": transaksi["alasan_denda"],
+                            "Total Bayar": transaksi["total"]
                         })
 
                         st.session_state.parkir.hapus(
@@ -701,7 +704,7 @@ else:
             with col2:
                 st.metric(
                     "💰 Total Pendapatan",
-                    f"Rp {df['Biaya'].sum():,}"
+                    f"Rp {df['Total Bayar'].sum():,}"
                 )
 
             st.dataframe(
