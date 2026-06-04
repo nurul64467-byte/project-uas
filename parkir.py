@@ -316,66 +316,47 @@ else:
             )
 
             if jumlah_parkir >= KAPASITAS_PARKIR:
+
                 st.error(
                     "🚫 Parkiran Penuh! Kendaraan Tidak Dapat Masuk."
                 )
 
             else:
+
                 tiket = f"TKT-{st.session_state.nomor_tiket}"
                 st.session_state.nomor_tiket += 1
+
                 waktu = datetime.now().strftime(
                     "%d-%m-%Y %H:%M:%S"
                 )
 
                 node = KendaraanNode(
-                tiket,
-                plat,
-                jenis,
-                waktu
-            )
+                    tiket,
+                    plat,
+                    jenis,
+                    waktu
+                )
 
-            st.session_state.parkir.tambah(node)
+                st.session_state.parkir.tambah(node)
 
-            st.success(
-            "Kendaraan Berhasil Masuk"
-            )
+                st.success("Kendaraan Berhasil Masuk")
 
-            tiket = f"TKT-{st.session_state.nomor_tiket}"
+                st.success("✅ Tiket Berhasil Dicetak")
 
-            st.session_state.nomor_tiket += 1
+                st.markdown(f"""
+                ## 🎫 TIKET PARKIR
 
-            waktu = datetime.now().strftime(
-                "%d-%m-%Y %H:%M:%S"
-            )
+                **Mall Karawaci**
 
-            node = KendaraanNode(
-                tiket,
-                plat,
-                jenis,
-                waktu
-            )
+                | Keterangan | Detail |
+                |------------|---------|
+                | Nomor Tiket | {tiket} |
+                | Plat Nomor | {plat} |
+                | Jenis Kendaraan | {jenis} |
+                | Waktu Masuk | {waktu} |
 
-            st.session_state.parkir.tambah(node)
-
-            st.success("Kendaraan Berhasil Masuk")
-
-            st.success("✅ Tiket Berhasil Dicetak")
-
-            st.markdown(f"""
-            ## 🎫 TIKET PARKIR
-
-            **Mall Karawaci**
-
-            | Keterangan | Detail |
-            |------------|---------|
-            | Nomor Tiket | {tiket} |
-            | Plat Nomor | {plat} |
-            | Jenis Kendaraan | {jenis} |
-            | Waktu Masuk | {waktu} |
-
-            Terima kasih telah menggunakan layanan parkir kami.
-            """)
-
+                Terima kasih telah menggunakan layanan parkir kami.
+                """)
     # =================================================
     # KENDARAAN KELUAR
     # =================================================
