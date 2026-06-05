@@ -479,7 +479,7 @@ else:
                 alasan_denda = []
 
                 if status_tiket == "Tiket Hilang":
-                    denda += 100000
+                    denda += 10000
                     alasan_denda.append("Tiket Hilang")
                 
                 # Jika tidak ada denda
