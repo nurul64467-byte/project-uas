@@ -379,6 +379,14 @@ else:
 
             Biaya dihitung berdasarkan jumlah jam parkir.
         """)
+        
+        st.error("""
+        ⚠️ DENDA PARKIR
+
+        🎫 Tiket Hilang : Rp 100.000
+        📄 Tidak Membawa STNK : Rp 50.000
+        🚨 Tiket Hilang + Tidak Membawa STNK : Rp 150.000
+        """)
 
         data_parkir = st.session_state.parkir.tampilkan()
 
