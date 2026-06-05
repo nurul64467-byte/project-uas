@@ -384,13 +384,7 @@ else:
         ### ⚠️ Informasi Denda
 
         🎫 **Tiket Hilang**  
-        Rp 100.000
-
-        📄 **Tidak Membawa STNK**  
-        Rp 50.000
-
-        🚨 **Tiket Hilang + Tidak Membawa STNK**  
-        Rp 150.000
+        Rp 10.000
         """)
 
         data_parkir = st.session_state.parkir.tampilkan()
@@ -424,11 +418,6 @@ else:
                 status_tiket = st.radio(
                     "🎫 Status Tiket",
                     ["Tiket Ada", "Tiket Hilang"]
-                )
-
-                bawa_stnk = st.radio(
-                    "📄 Membawa STNK?",
-                    ["Ya", "Tidak"]
                 )
                 
             lama_jam = st.number_input(
@@ -492,10 +481,6 @@ else:
                 if status_tiket == "Tiket Hilang":
                     denda += 100000
                     alasan_denda.append("Tiket Hilang")
-
-                if bawa_stnk == "Tidak":
-                    denda += 50000
-                    alasan_denda.append("Tidak Membawa STNK")
                 
                 # Jika tidak ada denda
                 if len(alasan_denda) == 0:
@@ -787,7 +772,6 @@ else:
                 df,
                 use_container_width=True
             )
-
         else:
 
             st.warning(
